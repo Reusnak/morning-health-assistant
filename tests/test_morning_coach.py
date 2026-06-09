@@ -1,6 +1,9 @@
 from unittest.mock import patch
 from morning_coach import MorningCoach
 
+_MOCK_WEATHER = {"city": "Beijing", "temperature": "22", "description": "Sunny", "humidity": "45"}
+_MOCK_SCHEDULE = [{"time": "09:00", "title": "站会", "duration_min": 30}]
+
 
 class TestMorningCoach:
     @patch("morning_coach.load_goals", return_value=[])
@@ -26,18 +29,22 @@ class TestMorningCoach:
     @patch("morning_coach.load_goals", return_value=[])
     @patch("morning_coach.load_history", return_value=[])
     @patch("morning_coach.load_profile", return_value={"name": "用户", "style": "warm"})
+    @patch("morning_coach.get_today_schedule", return_value=_MOCK_SCHEDULE)
+    @patch("morning_coach.get_weather", return_value=_MOCK_WEATHER)
     @patch("morning_coach.get_yesterday_health_data")
     @patch("morning_coach.save_record")
-    def test_run_multi_turn_flow(self, mock_save, mock_health, mock_profile, mock_history,
-                                  mock_trend, mock_goals_load, mock_expire, mock_active,
-                                  mock_score, mock_status, mock_greeting_gen,
-                                  mock_display, mock_ask, mock_chat, mock_enc_display,
-                                  mock_extract, mock_save_goals):
+    def test_run_multi_turn_flow(self, mock_save, mock_health, mock_weather, mock_schedule,
+                                  mock_profile, mock_history, mock_trend, mock_goals_load,
+                                  mock_expire, mock_active, mock_score, mock_status,
+                                  mock_greeting_gen, mock_display, mock_ask, mock_chat,
+                                  mock_enc_display, mock_extract, mock_save_goals):
         mock_health.return_value = {"date": "2026-06-10", "sleep_score": 62, "stress_level": 5}
 
         coach = MorningCoach()
         coach.run()
 
+        mock_weather.assert_called_once()
+        mock_schedule.assert_called_once()
         mock_greeting_gen.assert_called_once()
         mock_display.assert_called_once_with("早上好！")
         mock_chat.assert_called_once()
@@ -60,13 +67,15 @@ class TestMorningCoach:
     @patch("morning_coach.load_goals", return_value=[])
     @patch("morning_coach.load_history", return_value=[])
     @patch("morning_coach.load_profile", return_value={"name": "用户", "style": "warm"})
+    @patch("morning_coach.get_today_schedule", return_value=_MOCK_SCHEDULE)
+    @patch("morning_coach.get_weather", return_value=_MOCK_WEATHER)
     @patch("morning_coach.get_yesterday_health_data")
     @patch("morning_coach.save_record")
-    def test_run_natural_ending(self, mock_save, mock_health, mock_profile, mock_history,
-                                mock_trend, mock_goals_load, mock_expire, mock_active,
-                                mock_score, mock_status, mock_greeting_gen,
-                                mock_display, mock_ask, mock_chat, mock_enc_display,
-                                mock_extract, mock_save_goals):
+    def test_run_natural_ending(self, mock_save, mock_health, mock_weather, mock_schedule,
+                                mock_profile, mock_history, mock_trend, mock_goals_load,
+                                mock_expire, mock_active, mock_score, mock_status,
+                                mock_greeting_gen, mock_display, mock_ask, mock_chat,
+                                mock_enc_display, mock_extract, mock_save_goals):
         """chat_turn 返回不含问号时自然结束。"""
         mock_health.return_value = {"date": "2026-06-10", "sleep_score": 90, "stress_level": 1}
 

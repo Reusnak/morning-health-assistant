@@ -13,6 +13,7 @@ from memory import (
     load_profile, load_history, save_record, get_trend_warning,
     load_goals, save_goals, expire_old_goals, get_active_goals,
 )
+from tools import get_weather, get_today_schedule
 
 _EXIT_KEYWORDS = {"结束", "再见", "拜拜", "quit", "exit"}
 
@@ -39,6 +40,10 @@ class MorningCoach:
         # 感知：获取健康数据
         health_data = get_yesterday_health_data()
 
+        # 感知：获取工具数据（天气 + 日程）
+        weather = get_weather()
+        schedule = get_today_schedule()
+
         # 记忆：检查历史趋势
         trend_warning = get_trend_warning(self.history, self.profile["style"])
 
@@ -54,7 +59,8 @@ class MorningCoach:
         )
         status = evaluate_status(score)
         greeting = generate_greeting(
-            status, self.profile["style"], trend_warning, health_data, active_goal_texts
+            status, self.profile["style"], trend_warning, health_data,
+            active_goal_texts, weather=weather, schedule=schedule,
         )
 
         # 行动：展示问候，初始化对话历史

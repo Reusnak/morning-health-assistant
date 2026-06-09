@@ -66,7 +66,8 @@ def _call_llm(messages: list[dict], temperature: float) -> str:
 
 
 def generate_greeting(status: str, style: str, trend_warning: str | None,
-                      health_data: dict, active_goals: list[str] | None = None) -> str:
+                      health_data: dict, active_goals: list[str] | None = None,
+                      weather: dict | None = None, schedule: list[dict] | None = None) -> str:
     """调用 LLM 生成个性化问候语。失败时降级到默认模板。"""
     style_desc = _STYLE_DESCS.get(style, _STYLE_DESCS["warm"])
     status_desc = _STATUS_DESCS.get(status, _STATUS_DESCS["fair"])
@@ -76,7 +77,17 @@ def generate_greeting(status: str, style: str, trend_warning: str | None,
         goals_list = "、".join(active_goals)
         goals_section = f"- 用户之前设定的未完成目标：{goals_list}\n如果有关注目标，请在问候中自然地提及并询问进展。\n"
 
-    system_prompt = "你是一个温暖的晨间健康助手。根据用户的健康状态数据，生成一段个性化的晨间问候语。只输出问候语本身，不要加引号或额外说明。"
+    # 工具上下文
+    weather_section = ""
+    if weather and "error" not in weather:
+        weather_section = f"- 今日天气：{weather.get('city', '')} {weather.get('temperature', '?')}°C，{weather.get('description', '未知')}，湿度 {weather.get('humidity', '?')}%\n请根据天气给出相关建议（如适合室内/户外活动）。\n"
+
+    schedule_section = ""
+    if schedule:
+        events = "、".join(f"{e['time']} {e['title']}({e['duration_min']}分钟)" for e in schedule)
+        schedule_section = f"- 今日日程：{events}\n请根据日程密度给出节奏建议。\n"
+
+    system_prompt = "你是一个温暖的晨间健康助手。根据用户的健康状态数据、天气和日程，生成一段个性化的晨间问候语。只输出问候语本身，不要加引号或额外说明。"
     user_prompt = (
         f"请生成一段晨间问候语。\n"
         f"要求：\n"
@@ -84,6 +95,8 @@ def generate_greeting(status: str, style: str, trend_warning: str | None,
         f"- 用户状态：{status_desc}\n"
         f"- 昨日数据：睡眠评分 {health_data['sleep_score']}/100，压力指数 {health_data['stress_level']}/10\n"
         f"{goals_section}"
+        f"{weather_section}"
+        f"{schedule_section}"
         f"{trend_section}\n"
         f"只输出问候语本身。"
     )
