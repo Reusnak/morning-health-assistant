@@ -41,7 +41,7 @@ class MorningCoach:
         health_data = get_yesterday_health_data()
 
         # 感知：获取工具数据（天气 + 日程）
-        weather = get_weather()
+        weather = get_weather(city=self.profile.get("city"))
         schedule = get_today_schedule()
 
         # 记忆：检查历史趋势

@@ -3,7 +3,7 @@
 import json
 from pathlib import Path
 
-_DEFAULT_PROFILE = {"name": "用户", "style": "warm"}
+_DEFAULT_PROFILE = {"name": "用户", "style": "warm", "city": "Shenzhen"}
 
 _TREND_WARNINGS = {
     "warm": "注意到你最近几天都没怎么休息好，要对自己温柔一点哦。",

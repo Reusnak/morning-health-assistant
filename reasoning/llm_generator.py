@@ -60,7 +60,7 @@ def _call_llm(messages: list[dict], temperature: float) -> str:
         model=os.environ.get("DEEPSEEK_MODEL", "deepseek-chat"),
         messages=messages,
         temperature=temperature,
-        max_tokens=200,
+        max_tokens=500,
     )
     return response.choices[0].message.content
 

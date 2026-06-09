@@ -9,6 +9,7 @@ class TestLoadProfile:
         profile = load_profile(str(path))
         assert profile["name"] == "用户"
         assert profile["style"] == "warm"
+        assert profile["city"] == "Shenzhen"
         assert path.exists()
 
     def test_loads_existing(self, tmp_path):
