@@ -1,4 +1,13 @@
 __pycache__/
 *.pyc
 .pytest_cache/
+
+# 隐私 / 密钥
 .env
+
+# 运行时生成的数据
+history.json
+user_profile.json
+
+# 计划文档（不上传）
+docs/
