@@ -31,7 +31,7 @@ class MorningCoach:
             health_data["sleep_score"], health_data["stress_level"]
         )
         status = evaluate_status(score)
-        greeting = generate_greeting(status, self.profile["style"], trend_warning)
+        greeting = generate_greeting(status, self.profile["style"], trend_warning, health_data)
 
         # 行动：展示问候 + 等待回答 + 展示鼓励
         display_greeting(greeting)

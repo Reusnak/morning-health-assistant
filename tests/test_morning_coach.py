@@ -33,7 +33,8 @@ class TestMorningCoach:
         mock_health.assert_called_once()
         mock_score.assert_called_once_with(62, 5)
         mock_status.assert_called_once_with(57.2)
-        mock_greeting_gen.assert_called_once_with("fair", "warm", None)
+        mock_greeting_gen.assert_called_once_with("fair", "warm", None,
+                                                   {"date": "2026-06-08", "sleep_score": 62, "stress_level": 5})
         mock_display.assert_called_once_with("早上好呀～")
         mock_ask.assert_called_once()
         mock_enc_gen.assert_called_once_with("今天想轻松一点", "fair", "warm")
