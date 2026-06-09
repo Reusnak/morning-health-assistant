@@ -1,5 +1,5 @@
 from unittest.mock import patch, MagicMock
-from reasoning.llm_generator import get_llm_client, generate_greeting, generate_encouragement, chat_turn, extract_goals
+from reasoning.llm_generator import get_llm_client, generate_greeting, chat_turn, extract_goals
 
 
 class TestGetLlmClient:
@@ -71,43 +71,6 @@ class TestGenerateGreeting:
                                    {"date": "2026-06-08", "sleep_score": 85, "stress_level": 2})
         assert len(result) > 0
 
-
-class TestGenerateEncouragement:
-    @patch("reasoning.llm_generator.get_llm_client")
-    def test_calls_llm_and_returns_string(self, mock_get_client):
-        mock_response = MagicMock()
-        mock_response.choices = [MagicMock()]
-        mock_response.choices[0].message.content = "慢慢来，你已经很棒了！"
-        mock_client = MagicMock()
-        mock_client.chat.completions.create.return_value = mock_response
-        mock_get_client.return_value = mock_client
-
-        result = generate_encouragement("今天有点累", "fair", "warm")
-        assert "慢慢来" in result
-
-    @patch("reasoning.llm_generator.get_llm_client")
-    def test_prompt_includes_user_input(self, mock_get_client):
-        mock_response = MagicMock()
-        mock_response.choices = [MagicMock()]
-        mock_response.choices[0].message.content = "加油"
-        mock_client = MagicMock()
-        mock_client.chat.completions.create.return_value = mock_response
-        mock_get_client.return_value = mock_client
-
-        generate_encouragement("想休息一下", "poor", "direct")
-
-        call_args = mock_client.chat.completions.create.call_args
-        prompt_content = call_args.kwargs["messages"][1]["content"]
-        assert "想休息一下" in prompt_content
-
-    @patch("reasoning.llm_generator.get_llm_client")
-    def test_fallback_on_api_error(self, mock_get_client):
-        mock_client = MagicMock()
-        mock_client.chat.completions.create.side_effect = Exception("API Error")
-        mock_get_client.return_value = mock_client
-
-        result = generate_encouragement("今天想轻松一点", "fair", "warm")
-        assert len(result) > 0
 
 
 class TestChatTurn:

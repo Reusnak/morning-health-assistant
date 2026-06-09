@@ -27,14 +27,6 @@ _FALLBACK_GREETINGS = {
     ("poor", "direct"): "状态较差。今天降低预期，优先休息。",
 }
 
-_FALLBACK_ENCOURAGEMENTS = {
-    ("good", "warm"): "听起来不错呢，祝你今天一切顺利！",
-    ("good", "direct"): "保持节奏，继续推进。",
-    ("fair", "warm"): "慢慢来，每一步都算数的～",
-    ("fair", "direct"): "今天做好一件事就足够了。",
-    ("poor", "warm"): "已经是很勇敢的一天了，照顾好自己。",
-    ("poor", "direct"): "降低预期，优先恢复。",
-}
 
 _CHAT_SYSTEM_PROMPT = (
     "你是一个温暖的晨间健康助手。你正在和用户进行晨间对话。"
@@ -109,30 +101,6 @@ def generate_greeting(status: str, style: str, trend_warning: str | None,
     except Exception:
         return _FALLBACK_GREETINGS.get((status, style), _FALLBACK_GREETINGS[(status, "warm")])
 
-
-def generate_encouragement(user_input: str, status: str, style: str) -> str:
-    """调用 LLM 根据用户回答生成鼓励语。失败时降级到默认模板。"""
-    style_desc = _STYLE_DESCS.get(style, _STYLE_DESCS["warm"])
-    status_desc = _STATUS_DESCS.get(status, _STATUS_DESCS["fair"])
-
-    system_prompt = "你是一个温暖的晨间健康助手。用户刚刚回答了你的晨间问题。只输出鼓励语本身，不要加引号或额外说明。"
-    user_prompt = (
-        f"请生成一句简短的鼓励。\n"
-        f"要求：\n"
-        f"- 语气风格：{style_desc}\n"
-        f"- 用户当前状态：{status_desc}\n"
-        f"- 用户的回答：\"{user_input}\"\n"
-        f"- 生成一句简短的鼓励（1-2句话）\n"
-        f"只输出鼓励语本身。"
-    )
-
-    try:
-        return _call_llm([
-            {"role": "system", "content": system_prompt},
-            {"role": "user", "content": user_prompt},
-        ], temperature=0.8)
-    except Exception:
-        return _FALLBACK_ENCOURAGEMENTS.get((status, style), _FALLBACK_ENCOURAGEMENTS[(status, "warm")])
 
 
 def chat_turn(messages: list[dict], status: str, style: str) -> str:
