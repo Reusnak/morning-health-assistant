@@ -5,5 +5,12 @@
     "stress_level": 5,
     "status": "fair",
     "user_response": "今天想轻松一点"
+  },
+  {
+    "date": "2026-06-08",
+    "sleep_score": 62,
+    "stress_level": 5,
+    "status": "fair",
+    "user_response": "今天天气怎么样"
   }
 ]

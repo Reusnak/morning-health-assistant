@@ -47,3 +47,34 @@ def get_trend_warning(history: list[dict], style: str) -> str | None:
     if all(r["status"] == "poor" for r in history[-3:]):
         return _TREND_WARNINGS.get(style, _TREND_WARNINGS["warm"])
     return None
+
+
+def load_goals(path: str = "goals.json") -> list[dict]:
+    """读取目标列表；文件不存在返回空列表。"""
+    p = Path(path)
+    if not p.exists():
+        return []
+    return json.loads(p.read_text(encoding="utf-8"))
+
+
+def save_goals(goals: list[dict], path: str = "goals.json") -> None:
+    """写入目标列表到文件。"""
+    p = Path(path)
+    p.write_text(json.dumps(goals, ensure_ascii=False, indent=2), encoding="utf-8")
+
+
+def expire_old_goals(goals: list[dict], max_days: int = 3, today: str | None = None) -> list[dict]:
+    """将超过 max_days 天的 active 目标标记为 expired。"""
+    from datetime import date
+    today_date = date.fromisoformat(today) if today else date.today()
+    for g in goals:
+        if g["status"] == "active":
+            goal_date = date.fromisoformat(g["date"])
+            if (today_date - goal_date).days > max_days:
+                g["status"] = "expired"
+    return goals
+
+
+def get_active_goals(goals: list[dict]) -> list[dict]:
+    """返回 status=active 的目标列表。"""
+    return [g for g in goals if g["status"] == "active"]
